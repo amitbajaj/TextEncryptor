@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.buzzSecurity;
+package online.buzzzz.security;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -100,7 +100,9 @@ public class TextEncryptor extends JApplet {
             
             @Override
             public void handle(ActionEvent event) {
-                source.setText("Encrypting.....");
+                String encrypted;
+                encrypted = AESCrypto.encrypt(pass.getText(), source.getText());
+                source.setText(encrypted);
                 //System.out.println("Hello World!");
             }
         });
@@ -110,7 +112,9 @@ public class TextEncryptor extends JApplet {
             
             @Override
             public void handle(ActionEvent event) {
-                source.setText("Decrypting....");
+                String plainText;
+                plainText = AESCrypto.decrypt(pass.getText(), source.getText());
+                source.setText(plainText);
                 //System.out.println("Hello World!");
             }
         });
