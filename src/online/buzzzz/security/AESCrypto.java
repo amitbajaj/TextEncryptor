@@ -7,7 +7,9 @@ import javax.xml.bind.DatatypeConverter;
 
 public class AESCrypto {
 
-	static final int keyLength = 16;
+	static final int KEYLENGTH = 16;
+        //static final String ALGORITHM = "AES/CTR/NOPADDING";
+        static final String ALGORITHM = "AES/CBC/PKCS5PADDING";
 	
 	public static String encrypt(String key, String value){
 		try{
@@ -17,12 +19,12 @@ public class AESCrypto {
 			IvParameterSpec iv = new IvParameterSpec(randBytes);
 			String key2use=key;
 			
-			if(key.length()%keyLength!=0){
-				key2use = String.format("%0"+(keyLength-(key.length()%keyLength))+"d%s", 0, key);
+			if(key.length()%KEYLENGTH!=0){
+				key2use = String.format("%0"+(KEYLENGTH-(key.length()%KEYLENGTH))+"d%s", 0, key);
 			}
 			SecretKeySpec skeySpec = new SecretKeySpec(key2use.getBytes("UTF-8"), "AES");
 			
-			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+			Cipher cipher = Cipher.getInstance(ALGORITHM);
 			cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
 			
 			byte[] staged = cipher.doFinal(value.getBytes());
@@ -42,8 +44,8 @@ public class AESCrypto {
             byte[] encrypted = new byte[staged.length-16];
 			String key2use=key;
 			
-			if(key.length()%keyLength!=0){
-				key2use = String.format("%0"+(keyLength-(key.length()%keyLength))+"d%s", 0, key);
+			if(key.length()%KEYLENGTH!=0){
+				key2use = String.format("%0"+(KEYLENGTH-(key.length()%KEYLENGTH))+"d%s", 0, key);
 			}
             
             System.arraycopy(staged, 0, ivBytes, 0, ivBytes.length);
@@ -52,7 +54,7 @@ public class AESCrypto {
             IvParameterSpec iv = new IvParameterSpec(ivBytes);
             SecretKeySpec skeySpec = new SecretKeySpec(key2use.getBytes("UTF-8"), "AES");
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
 
             byte[] original = cipher.doFinal(encrypted);
