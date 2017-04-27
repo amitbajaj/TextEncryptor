@@ -1,28 +1,40 @@
 package online.buzzzz.security;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
 public class AESCrypto {
 
-	static final int keyLength = 16;
+	static final int KEYLENGTH = 16;
+        static final int IVLENGTH = 16;
+        static final String ALGORITHM = "AES/CBC/PKCS%PADDING";
 	
 	public static String encrypt(String key, String value){
 		try{
 			SecureRandom random = new SecureRandom();
-			byte[] randBytes = new byte[16];
+			byte[] randBytes = new byte[IVLENGTH];
 			random.nextBytes(randBytes);
 			IvParameterSpec iv = new IvParameterSpec(randBytes);
 			String key2use=key;
 			
-			if(key.length()%keyLength!=0){
-				key2use = String.format("%0"+(keyLength-(key.length()%keyLength))+"d%s", 0, key);
-			}
-			SecretKeySpec skeySpec = new SecretKeySpec(key2use.getBytes("UTF-8"), "AES");
+			if(key.length()< KEYLENGTH){
+                            key2use = String.format("%0"+(KEYLENGTH-key.length())+"d%s", 0, key);
+			}else if(key.length()>KEYLENGTH){
+                            key2use = key.substring(0,KEYLENGTH);
+                        }
+			SecretKeySpec skeySpec;
+                        skeySpec = new SecretKeySpec(key2use.getBytes("UTF-8") , "AES");
 			
-			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+			Cipher cipher = Cipher.getInstance(ALGORITHM);
 			cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
 			
 			byte[] staged = cipher.doFinal(value.getBytes());
@@ -31,20 +43,22 @@ public class AESCrypto {
 			System.arraycopy(staged, 0, encrypted, randBytes.length, staged.length);
 			
 			return DatatypeConverter.printBase64Binary(encrypted);
-		} catch (Exception ex) {
+		} catch (UnsupportedEncodingException | InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
 		    return ex.toString();
 		}
 	}
     public static String decrypt(String key, String value) {
     	try {
-            byte[] ivBytes = new byte[16];
+            byte[] ivBytes = new byte[IVLENGTH];
             byte[] staged = DatatypeConverter.parseBase64Binary(value);
-            byte[] encrypted = new byte[staged.length-16];
-			String key2use=key;
-			
-			if(key.length()%keyLength!=0){
-				key2use = String.format("%0"+(keyLength-(key.length()%keyLength))+"d%s", 0, key);
-			}
+            byte[] encrypted = new byte[staged.length-IVLENGTH];
+            String key2use=key;
+
+            if(key.length()< KEYLENGTH){
+                key2use = String.format("%0"+(KEYLENGTH-key.length())+"d%s", 0, key);
+            }else if(key.length()>KEYLENGTH){
+                key2use = key.substring(0,KEYLENGTH);
+            }
             
             System.arraycopy(staged, 0, ivBytes, 0, ivBytes.length);
             System.arraycopy(staged, ivBytes.length, encrypted, 0, staged.length-ivBytes.length);
@@ -52,13 +66,13 @@ public class AESCrypto {
             IvParameterSpec iv = new IvParameterSpec(ivBytes);
             SecretKeySpec skeySpec = new SecretKeySpec(key2use.getBytes("UTF-8"), "AES");
 
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
 
             byte[] original = cipher.doFinal(encrypted);
 
             return new String(original);
-        } catch (Exception ex) {
+        } catch (UnsupportedEncodingException | InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
             return ex.toString();
         }
     }
