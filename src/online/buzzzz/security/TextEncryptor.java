@@ -42,20 +42,6 @@ public class TextEncryptor extends JApplet {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        MessageDigest md;
-        byte[] hashBytes;
-        String hashString;
-        try{
-            md = MessageDigest.getInstance("SHA-256");
-            hashBytes = md.digest("test this is another test another test".getBytes());
-            System.out.println(hashBytes.length);
-            hashString = DatatypeConverter.printBase64Binary(hashBytes);
-            System.out.println(hashString.length());
-        }catch (NoSuchAlgorithmException ex){
-            
-        }
-        
-        
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
