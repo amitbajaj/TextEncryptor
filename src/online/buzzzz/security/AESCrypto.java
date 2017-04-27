@@ -16,7 +16,7 @@ public class AESCrypto {
 
 	static final int KEYLENGTH = 16;
         static final int IVLENGTH = 16;
-        static final String ALGORITHM = "AES/CBC/PKCS5PADDING";
+        static final String ALGORITHM = "AES/CBC/PKCS%PADDING";
 	
 	public static String encrypt(String key, String value){
 		try{
