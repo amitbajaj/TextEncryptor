@@ -18,13 +18,16 @@ public class AESCrypto {
         static final int IVLENGTH = 16;
         static final String ALGORITHM = "AES/CBC/PKCS5PADDING";
 	
+        public static String MASTERIV;
+        public static String MASTERKey;
+        
 	public static String encrypt(String key, String value){
 		try{
 			SecureRandom random = new SecureRandom();
 			byte[] randBytes = new byte[IVLENGTH];
 			random.nextBytes(randBytes);
 			IvParameterSpec iv = new IvParameterSpec(randBytes);
-			String key2use=key;
+                        String key2use=key;
 			
 			if(key.length()< KEYLENGTH){
                             key2use = String.format("%0"+(KEYLENGTH-key.length())+"d%s", 0, key);
@@ -41,7 +44,8 @@ public class AESCrypto {
 			byte[] encrypted = new byte[staged.length+randBytes.length];
 			System.arraycopy(randBytes, 0, encrypted, 0, randBytes.length);
 			System.arraycopy(staged, 0, encrypted, randBytes.length, staged.length);
-			
+                        MASTERIV = new String(randBytes);
+                        MASTERKey = key2use;
 			return DatatypeConverter.printBase64Binary(encrypted);
 		} catch (UnsupportedEncodingException | InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
 		    return ex.toString();
@@ -62,7 +66,6 @@ public class AESCrypto {
             
             System.arraycopy(staged, 0, ivBytes, 0, ivBytes.length);
             System.arraycopy(staged, ivBytes.length, encrypted, 0, staged.length-ivBytes.length);
-        	
             IvParameterSpec iv = new IvParameterSpec(ivBytes);
             SecretKeySpec skeySpec = new SecretKeySpec(key2use.getBytes("UTF-8"), "AES");
 
@@ -70,6 +73,8 @@ public class AESCrypto {
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
 
             byte[] original = cipher.doFinal(encrypted);
+            MASTERIV = new String(ivBytes);
+            MASTERKey = key2use;
 
             return new String(original);
         } catch (UnsupportedEncodingException | InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {

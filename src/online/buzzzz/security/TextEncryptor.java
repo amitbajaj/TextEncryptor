@@ -7,8 +7,6 @@ package online.buzzzz.security;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import javafx.geometry.Insets;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
@@ -18,7 +16,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javax.swing.JApplet;
@@ -26,7 +23,6 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.xml.bind.DatatypeConverter;
 
 /**
  *
@@ -102,7 +98,6 @@ public class TextEncryptor extends JApplet {
             String encrypted;
             encrypted = AESCrypto.encrypt(pass.getText(), source.getText());
             source.setText(encrypted);
-            //System.out.println("Hello World!");
         });
         Button decBtn = new Button();
         decBtn.setText("Decrypt");
@@ -110,7 +105,6 @@ public class TextEncryptor extends JApplet {
             String plainText;
             plainText = AESCrypto.decrypt(pass.getText(), source.getText());
             source.setText(plainText);
-            //System.out.println("Hello World!");
         });
         buttonArea.getChildren().addAll(encBtn, decBtn);
         root.getChildren().addAll(source,pass,buttonArea);
