@@ -26,8 +26,9 @@ public class AESCrypto {
                     MessageDigest md = MessageDigest.getInstance("SHA-256"); 
                     random.nextBytes(randBytes);
                     IvParameterSpec iv = new IvParameterSpec(randBytes);
-                    String key2use=DatatypeConverter.printHexBinary(md.digest(key.getBytes("UTF-8"))).toLowerCase().substring(0, 16);
+                    String key2use=DatatypeConverter.printHexBinary(md.digest(key.getBytes("UTF-8"))).toLowerCase().substring(0, KEYLENGTH);
                     SecretKeySpec skeySpec;
+                    System.out.println(key2use.getBytes().length);
                     skeySpec = new SecretKeySpec(key2use.getBytes("UTF-8") , "AES");
 
                     Cipher cipher = Cipher.getInstance(ALGORITHM);
@@ -48,7 +49,8 @@ public class AESCrypto {
             byte[] staged = DatatypeConverter.parseBase64Binary(value);
             byte[] encrypted = new byte[staged.length-IVLENGTH];
             MessageDigest md = MessageDigest.getInstance("SHA-256"); 
-            String key2use=DatatypeConverter.printHexBinary(md.digest(key.getBytes("UTF-8"))).toLowerCase().substring(0,16);
+            String key2use=DatatypeConverter.printHexBinary(md.digest(key.getBytes("UTF-8"))).toLowerCase().substring(0,KEYLENGTH);
+            System.out.println(key2use.getBytes().length);
             System.arraycopy(staged, 0, ivBytes, 0, ivBytes.length);
             System.arraycopy(staged, ivBytes.length, encrypted, 0, staged.length-ivBytes.length);
             IvParameterSpec iv = new IvParameterSpec(ivBytes);
