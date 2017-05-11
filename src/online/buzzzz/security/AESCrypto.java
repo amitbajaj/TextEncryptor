@@ -15,34 +15,37 @@ import javax.xml.bind.DatatypeConverter;
 
 public class AESCrypto {
 
-	static final int KEYLENGTH = 16;
-        static final int IVLENGTH = 16;
-        static final String ALGORITHM = "AES/CBC/PKCS5PADDING";
+    static final int KEYLENGTH = 16;
+    static final int IVLENGTH = 16;
+    static final String ALGORITHM = "AES/CBC/PKCS5PADDING";
 	
-	public static String encrypt(String key, String value){
-		try{
-                    SecureRandom random = new SecureRandom();
-                    byte[] randBytes = new byte[IVLENGTH];
-                    MessageDigest md = MessageDigest.getInstance("SHA-256"); 
-                    random.nextBytes(randBytes);
-                    IvParameterSpec iv = new IvParameterSpec(randBytes);
-                    String key2use=DatatypeConverter.printHexBinary(md.digest(key.getBytes("UTF-8"))).toLowerCase().substring(0, KEYLENGTH);
-                    SecretKeySpec skeySpec;
-                    System.out.println(key2use.getBytes().length);
-                    skeySpec = new SecretKeySpec(key2use.getBytes("UTF-8") , "AES");
+    public static String encrypt(String key, String value){
+        try{
+            SecureRandom random = new SecureRandom();
+            byte[] randBytes = new byte[IVLENGTH];
+            MessageDigest md = MessageDigest.getInstance("SHA-256"); 
+            random.nextBytes(randBytes);
+            IvParameterSpec iv = new IvParameterSpec(randBytes);
+            String key2use=DatatypeConverter.printHexBinary(md.digest(key.getBytes("UTF-8"))).toLowerCase().substring(0, KEYLENGTH);
+            SecretKeySpec skeySpec;
+            System.out.println(DatatypeConverter.printHexBinary(md.digest(key.getBytes("UTF-8"))));
+            System.out.println(key2use);
+            System.out.println(key2use.getBytes().length);
+            System.out.println(DatatypeConverter.printBase64Binary(randBytes));
+            skeySpec = new SecretKeySpec(key2use.getBytes("UTF-8") , "AES");
 
-                    Cipher cipher = Cipher.getInstance(ALGORITHM);
-                    cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+            Cipher cipher = Cipher.getInstance(ALGORITHM);
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
 
-                    byte[] staged = cipher.doFinal(value.getBytes());
-                    byte[] encrypted = new byte[staged.length+randBytes.length];
-                    System.arraycopy(randBytes, 0, encrypted, 0, randBytes.length);
-                    System.arraycopy(staged, 0, encrypted, randBytes.length, staged.length);
-                    return DatatypeConverter.printBase64Binary(encrypted);
-		} catch (UnsupportedEncodingException | InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
-		    return ex.toString();
-		}
-	}
+            byte[] staged = cipher.doFinal(value.getBytes());
+            byte[] encrypted = new byte[staged.length+randBytes.length];
+            System.arraycopy(randBytes, 0, encrypted, 0, randBytes.length);
+            System.arraycopy(staged, 0, encrypted, randBytes.length, staged.length);
+            return DatatypeConverter.printBase64Binary(encrypted);
+        } catch (UnsupportedEncodingException | InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
+            return ex.toString();
+        }
+    }
     public static String decrypt(String key, String value) {
     	try {
             byte[] ivBytes = new byte[IVLENGTH];
@@ -50,9 +53,12 @@ public class AESCrypto {
             byte[] encrypted = new byte[staged.length-IVLENGTH];
             MessageDigest md = MessageDigest.getInstance("SHA-256"); 
             String key2use=DatatypeConverter.printHexBinary(md.digest(key.getBytes("UTF-8"))).toLowerCase().substring(0,KEYLENGTH);
+            System.out.println(DatatypeConverter.printHexBinary(md.digest(key.getBytes("UTF-8"))));
+            System.out.println(key2use);
             System.out.println(key2use.getBytes().length);
             System.arraycopy(staged, 0, ivBytes, 0, ivBytes.length);
             System.arraycopy(staged, ivBytes.length, encrypted, 0, staged.length-ivBytes.length);
+            System.out.println(DatatypeConverter.printBase64Binary(ivBytes));
             IvParameterSpec iv = new IvParameterSpec(ivBytes);
             SecretKeySpec skeySpec = new SecretKeySpec(key2use.getBytes("UTF-8"), "AES");
 
