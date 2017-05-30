@@ -14,6 +14,7 @@ import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
@@ -81,14 +82,16 @@ public class TextEncryptor extends JApplet {
         source.setPrefRowCount(70);
         source.setWrapText(true);
         TextField pass;
-        pass = new TextField();
+        pass = new PasswordField();
         pass.setPrefColumnCount(200);
+        
+/*
         pass.textProperty().addListener(
                 (observable,oldValue,newValue)->{
                     if (newValue.length() > 16) ((StringProperty)observable).setValue(oldValue);
                 }
-        );
-        
+            );
+*/
         HBox buttonArea = new HBox();
         //buttonArea.setPadding(defInset);
         buttonArea.setSpacing(10);

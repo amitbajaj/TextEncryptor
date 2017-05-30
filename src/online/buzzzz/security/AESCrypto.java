@@ -28,10 +28,6 @@ public class AESCrypto {
             IvParameterSpec iv = new IvParameterSpec(randBytes);
             String key2use=DatatypeConverter.printHexBinary(md.digest(key.getBytes("UTF-8"))).toLowerCase().substring(0, KEYLENGTH);
             SecretKeySpec skeySpec;
-            System.out.println(DatatypeConverter.printHexBinary(md.digest(key.getBytes("UTF-8"))));
-            System.out.println(key2use);
-            System.out.println(key2use.getBytes().length);
-            System.out.println(DatatypeConverter.printBase64Binary(randBytes));
             skeySpec = new SecretKeySpec(key2use.getBytes("UTF-8") , "AES");
 
             Cipher cipher = Cipher.getInstance(ALGORITHM);
@@ -53,12 +49,8 @@ public class AESCrypto {
             byte[] encrypted = new byte[staged.length-IVLENGTH];
             MessageDigest md = MessageDigest.getInstance("SHA-256"); 
             String key2use=DatatypeConverter.printHexBinary(md.digest(key.getBytes("UTF-8"))).toLowerCase().substring(0,KEYLENGTH);
-            System.out.println(DatatypeConverter.printHexBinary(md.digest(key.getBytes("UTF-8"))));
-            System.out.println(key2use);
-            System.out.println(key2use.getBytes().length);
             System.arraycopy(staged, 0, ivBytes, 0, ivBytes.length);
             System.arraycopy(staged, ivBytes.length, encrypted, 0, staged.length-ivBytes.length);
-            System.out.println(DatatypeConverter.printBase64Binary(ivBytes));
             IvParameterSpec iv = new IvParameterSpec(ivBytes);
             SecretKeySpec skeySpec = new SecretKeySpec(key2use.getBytes("UTF-8"), "AES");
 
